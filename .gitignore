@@ -3,6 +3,7 @@ node_modules
 .DS_store
 **/coverage
 client/dist/bundle.js*
+/database/config.js
 
 # Ignores transpiled images
 client/dist/assets/transpiled/*.png
