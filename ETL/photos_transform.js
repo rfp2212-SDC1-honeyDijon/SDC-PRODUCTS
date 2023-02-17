@@ -8,14 +8,21 @@ const { Transform } = require('stream');
 const csvStringifier = createCsvStringifier({
   header: [
     { id: 'id', title: 'id' },
-    { id: 'product_id', title: 'product_id' },
-    { id: 'name', title: 'name' },
-    { id: 'value', title: 'value' },
+    { id: 'styleId', title: 'styleId' },
+    { id: 'url', title: 'url' },
+    { id: 'thumbnail_url', title: 'thumbnail_url' },
   ],
 });
 
 const readStream = fs.createReadStream('ETL/atelier_data/photos.csv');
 const writeStream = fs.createWriteStream('ETL/transformed_data/photos.csv');
+
+function isValidURL(string) {
+  if (string.slice(0, 8) === 'https://') {
+    return true;
+  }
+  return false;
+}
 
 class CSVCleaner extends Transform {
   constructor(options) {
@@ -23,17 +30,24 @@ class CSVCleaner extends Transform {
   }
 
   _transform(chunk, encoding, next) {
-    const row = {
-      id: Number(chunk.id),
-      product_id: Number(chunk.product_id),
-      name: chunk.feature,
-      value: chunk.value,
-    };
-    this.push(csvStringifier.stringifyRecords([row]));
+    const requiredKeys = ['id', 'styleId', 'url', 'thumbnail_url'];
+    const missingKeys = requiredKeys.filter((key) => !(key in chunk));
+    if (missingKeys.length > 0) {
+      console.log('skipping row: missing required keys');
+    } else if (!isValidURL(chunk.url) || !isValidURL(chunk.thumbnail_url)) {
+      return next();
+    } else {
+      const row = {
+        id: Number(chunk.id),
+        styleId: Number(chunk.styleId),
+        url: chunk.url,
+        thumbnail_url: chunk.thumbnail_url,
+      };
+      this.push(csvStringifier.stringifyRecords([row]));
+    }
     next();
   }
 }
-
 const transformer = new CSVCleaner({ writableObjectMode: true });
 
 writeStream.write(csvStringifier.getHeaderString());
@@ -42,3 +56,13 @@ readStream
   .pipe(transformer)
   .pipe(writeStream)
   .on('finish', () => { console.log('Finished transforming photos'); });
+
+// fs.createReadStream('ETL/atelier_data/photos.csv')
+//   .pipe(csv())
+//   .on('data', (row) => {
+//     console.log(row);
+//     process.exit(0);
+//   })
+//   .on('end', () => {
+//     console.log('Finished reading file!');
+//   });
