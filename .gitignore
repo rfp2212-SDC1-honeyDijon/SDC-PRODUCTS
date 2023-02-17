@@ -11,3 +11,5 @@ client/dist/assets/transpiled/*.jpg
 client/dist/assets/transpiled/*.jpeg
 client/dist/assets/transpiled/*.svg
 client/dist/assets/transpiled/*.gif
+
+ETL/atelier_data
