@@ -29,34 +29,38 @@ function capitalizeWords(string) {
     .join(' ');
 }
 
+let errorCount = 0;
+let successCount = 0;
+
 class CSVCleaner extends Transform {
   constructor(options) {
     super(options);
   }
 
+  // error count is 0/1000011
+
   _transform(chunk, encoding, next) {
     const requiredKeys = ['id', 'name', 'slogan', 'description', 'category', 'default_price'];
     const expectedLength = requiredKeys.length;
+    const missingKeys = requiredKeys.filter((key) => !(key in chunk));
     if (Object.keys(chunk).length > expectedLength) {
-      console.log(`skipping row, expected ${expectedLength} length but received ${Object.keys(chunk).length} length`);
+      errorCount++;
+    } else if (missingKeys.length > 0) {
+      errorCount++;
     } else {
-      const missingKeys = requiredKeys.filter((key) => !(key in chunk));
-      if (missingKeys.length > 0) {
-        console.log('skipping row: missing required keys');
-      } else {
-        const row = {
-          id: Number(chunk.id),
-          campus: 'hr-rfp',
-          name: capitalizeWords(chunk.name),
-          slogan: chunk.slogan,
-          description: chunk.description,
-          category: capitalizeWords(chunk.category),
-          default_price: chunk.default_price,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        this.push(csvStringifier.stringifyRecords([row]));
-      }
+      successCount++;
+      const row = {
+        id: Number(chunk.id),
+        campus: 'hr-rfp',
+        name: capitalizeWords(chunk.name),
+        slogan: chunk.slogan,
+        description: chunk.description,
+        category: capitalizeWords(chunk.category),
+        default_price: chunk.default_price,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      this.push(csvStringifier.stringifyRecords([row]));
     }
     next();
   }
@@ -69,10 +73,10 @@ readStream
   .pipe(csv())
   .pipe(transformer)
   .pipe(writeStream)
-  .on('finish', () => { console.log('Finished transforming products'); });
+  .on('finish', () => { console.log(`Finished transforming products, error rate is ${(errorCount) / (errorCount + successCount)}`); });
 
-// Checks the first row of uncleaned product csv file
-// console.log(process.cwd());
+// // Checks the first row of uncleaned product csv file
+// // console.log(process.cwd());
 // fs.createReadStream('ETL/atelier_data/product.csv')
 //   .pipe(csv())
 //   .on('data', (row) => {

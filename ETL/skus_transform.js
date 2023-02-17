@@ -22,8 +22,7 @@ function isSizeValid(size) {
   return sizes.includes(size);
 }
 
-let invalidSizeCount = 0;
-let invalidQuantityValueType = 0;
+let errorCount = 0;
 let successCount = 0;
 
 class CSVCleaner extends Transform {
@@ -32,10 +31,15 @@ class CSVCleaner extends Transform {
   }
 
   _transform(chunk, encoding, next) {
-    if (!isSizeValid(chunk.size)) {
-      invalidSizeCount++;
-    } else if (typeof chunk.quantity !== 'number') {
-      invalidQuantityValueType++;
+    const requiredKeys = ['id', 'quantity', 'size', 'styleId'];
+    const expectedLength = requiredKeys.length;
+    const missingKeys = requiredKeys.filter((key) => !(key in chunk));
+    if (Object.keys(chunk).length > expectedLength) {
+      errorCount++;
+    } else if (missingKeys.length > 0) {
+      errorCount++;
+    } else if (!isSizeValid(chunk.size)) {
+      errorCount++;
     } else {
       successCount++;
       const row = {
@@ -57,4 +61,4 @@ readStream
   .pipe(csv())
   .pipe(transformer)
   .pipe(writeStream)
-  .on('finish', () => { console.log(`Finished transforming skus, error rate is ${(invalidQuantityValueType + invalidSizeCount) / (invalidQuantityValueType + invalidSizeCount + successCount)}`); });
+  .on('finish', () => { console.log(`Finished transforming skus, error rate is ${(errorCount) / (errorCount + successCount)}`); });

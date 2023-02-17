@@ -24,6 +24,9 @@ function isValidURL(string) {
   return false;
 }
 
+let errorCount = 0;
+let successCount = 0;
+
 class CSVCleaner extends Transform {
   constructor(options) {
     super(options);
@@ -33,10 +36,11 @@ class CSVCleaner extends Transform {
     const requiredKeys = ['id', 'styleId', 'url', 'thumbnail_url'];
     const missingKeys = requiredKeys.filter((key) => !(key in chunk));
     if (missingKeys.length > 0) {
-      console.log('skipping row: missing required keys');
+      errorCount++;
     } else if (!isValidURL(chunk.url) || !isValidURL(chunk.thumbnail_url)) {
-      return next();
+      errorCount++;
     } else {
+      successCount++;
       const row = {
         id: Number(chunk.id),
         styleId: Number(chunk.styleId),
@@ -55,7 +59,7 @@ readStream
   .pipe(csv())
   .pipe(transformer)
   .pipe(writeStream)
-  .on('finish', () => { console.log('Finished transforming photos'); });
+  .on('finish', () => { console.log(`Finished transforming photos, error rate is ${(errorCount) / (errorCount + successCount)}`); });
 
 // fs.createReadStream('ETL/atelier_data/photos.csv')
 //   .pipe(csv())

@@ -19,6 +19,9 @@ const csvStringifier = createCsvStringifier({
 const readStream = fs.createReadStream('ETL/atelier_data/styles.csv');
 const writeStream = fs.createWriteStream('ETL/transformed_data/styles.csv');
 
+let errorCount = 0;
+let successCount = 0;
+
 class CSVCleaner extends Transform {
   constructor(options) {
     super(options);
@@ -28,8 +31,11 @@ class CSVCleaner extends Transform {
     const requiredKeys = ['id', 'productId', 'name', 'original_price'];
     const missingKeys = requiredKeys.filter((key) => !(key in chunk));
     if (missingKeys.length > 0) {
-      console.log('skipping row: missing required keys');
+      errorCount++;
+    } else if (chunk.original_price === 'null' || chunk.original_price === '') {
+      errorCount++;
     } else {
+      successCount++;
       const row = {
         id: Number(chunk.id),
         productId: Number(chunk.productId),
@@ -51,4 +57,4 @@ readStream
   .pipe(csv())
   .pipe(transformer)
   .pipe(writeStream)
-  .on('finish', () => { console.log('Finished transforming styles'); });
+  .on('finish', () => { console.log(`Finished transforming styles, error rate is ${(errorCount) / (errorCount + successCount)}`); });
