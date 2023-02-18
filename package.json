@@ -8,7 +8,8 @@
     "client-dev": "npx webpack --watch",
     "prod": "npx webpack && node server/index.js",
     "test-cover": "jest --coverage",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "start": "npx nodemon --watch SDCServer SDCServer/index.js"
   },
   "jest": {
     "coveragePathIgnorePatterns": [
