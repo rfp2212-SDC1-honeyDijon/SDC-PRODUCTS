@@ -1,45 +1,23 @@
-const {
-  getProductsQuery, getProductByIdQuery, getRelatedProductQuery, getProductStyleQuery,
-} = require('../../database/index');
+const db = require('../database');
+
+const getProducts = (count, page) => db.query(`SELECT * FROM products LIMIT ${page * count}`)
+  .then((results) => results.rows)
+  .catch((error) => {
+    throw new Error(`Error retrieving getProducts, error message: ${error.message}`);
+  });
+
+const getProduct = (productId) => db.query(`SELECT * FROM products WHERE id = ${productId}`)
+  .then((results) => {
+    if (results.rows.length === 0) {
+      throw new Error(`ProductId ${productId} not found`);
+    }
+    return results.rows[0];
+  })
+  .catch((error) => {
+    throw new Error(`Error retrieving Product, error message: ${error.message}`);
+  });
 
 module.exports = {
-  getProducts: (page = 1, count = 5, callback) => {
-    getProductsQuery(page, count, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
-  },
-
-  getProductById: (product_id, callback) => {
-    getProductByIdQuery(product_id, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
-  },
-
-  getRelatedProduct: (product_id, callback) => {
-    getRelatedProductQuery(product_id, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
-  },
-
-  getProductStyle: (product_id, callback) => {
-    getProductStyleQuery(product_id, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
-  },
+  getProducts,
+  getProduct,
 };
