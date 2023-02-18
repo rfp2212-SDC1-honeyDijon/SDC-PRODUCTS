@@ -38,7 +38,7 @@ class CSVCleaner extends Transform {
       successCount++;
       const row = {
         id: Number(chunk.id),
-        productId: Number(chunk.productId),
+        product_id: Number(chunk.productId),
         name: chunk.name,
         sale_price: chunk.sale_price,
         original_price: chunk.original_price,
