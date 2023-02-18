@@ -42,6 +42,18 @@ CREATE TABLE IF NOT EXISTS skus (
   style_id INTEGER REFERENCES styles(id)
 );
 
+CREATE TABLE IF NOT EXISTS characteristics (
+  id INTEGER PRIMARY KEY,
+  product_id INTEGER REFERENCES products(id),
+  name VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS related (
+  id INTEGER PRIMARY KEY,
+  current_product_id INTEGER,
+  related_product_id INTEGER
+);
+
 CREATE INDEX products_idx ON products(id, name, slogan, description, category, default_price);
 
 COPY products(id, name, slogan, description, category, default_price)
@@ -62,4 +74,12 @@ COPY photos(id, style_id, url, thumbnail_url)
 
 COPY skus(id, quantity, size, style_id)
   FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/skus.csv'
+  DELIMITER ',' CSV HEADER;
+
+COPY characteristics(id, product_id, name)
+  FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/characteristics.csv'
+  DELIMITER ',' CSV HEADER;
+
+COPY related(id, current_product_id, related_product_id)
+  FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/related.csv'
   DELIMITER ',' CSV HEADER;
