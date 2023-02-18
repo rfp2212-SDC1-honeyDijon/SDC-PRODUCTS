@@ -9,22 +9,22 @@ CREATE TABLE IF NOT EXISTS products (
   slogan VARCHAR(500),
   description VARCHAR(500),
   category VARCHAR(50),
-  default_price VARCHAR(20)
+  default_price VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS features (
   id INTEGER PRIMARY KEY,
   product_id INTEGER REFERENCES products(id),
-  name VARCHAR(20),
-  value VARCHAR(20)
+  name VARCHAR(50),
+  value VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS styles (
   id INTEGER PRIMARY KEY,
   product_id INTEGER REFERENCES products(id),
-  name VARCHAR(20),
-  sale_price VARCHAR(20),
-  original_price VARCHAR(20),
+  name VARCHAR(50),
+  sale_price VARCHAR(50),
+  original_price VARCHAR(50),
   is_default BOOLEAN
 );
 
@@ -48,3 +48,18 @@ COPY products(id, name, slogan, description, category, default_price)
   FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/product.csv'
   DELIMITER ',' CSV HEADER;
 
+COPY features(id, product_id, name, value)
+  FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/features.csv'
+  DELIMITER ',' CSV HEADER;
+
+COPY styles(id, product_id, name, sale_price, original_price, is_default)
+  FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/styles.csv'
+  DELIMITER ',' CSV HEADER;
+
+COPY photos(id, style_id, url, thumbnail_url)
+  FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/photos.csv'
+  DELIMITER ',' CSV HEADER;
+
+COPY skus(id, quantity, size, style_id)
+  FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/skus.csv'
+  DELIMITER ',' CSV HEADER;
