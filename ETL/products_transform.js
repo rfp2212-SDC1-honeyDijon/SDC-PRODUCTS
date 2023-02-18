@@ -8,14 +8,11 @@ const { Transform } = require('stream');
 const csvStringifier = createCsvStringifier({
   header: [
     { id: 'id', title: 'id' },
-    { id: 'campus', title: 'campus' },
     { id: 'name', title: 'name' },
     { id: 'slogan', title: 'slogan' },
     { id: 'description', title: 'description' },
     { id: 'category', title: 'category' },
     { id: 'default_price', title: 'default_price' },
-    { id: 'created_at', title: 'created_at' },
-    { id: 'updated_at', title: 'updated_at' },
   ],
 });
 
@@ -43,7 +40,7 @@ class CSVCleaner extends Transform {
     const requiredKeys = ['id', 'name', 'slogan', 'description', 'category', 'default_price'];
     const expectedLength = requiredKeys.length;
     const missingKeys = requiredKeys.filter((key) => !(key in chunk));
-    if (Object.keys(chunk).length > expectedLength) {
+    if (Object.keys(chunk).length !== expectedLength) {
       errorCount++;
     } else if (missingKeys.length > 0) {
       errorCount++;
@@ -51,14 +48,11 @@ class CSVCleaner extends Transform {
       successCount++;
       const row = {
         id: Number(chunk.id),
-        campus: 'hr-rfp',
         name: capitalizeWords(chunk.name),
         slogan: chunk.slogan,
         description: chunk.description,
         category: capitalizeWords(chunk.category),
         default_price: chunk.default_price,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
       };
       this.push(csvStringifier.stringifyRecords([row]));
     }

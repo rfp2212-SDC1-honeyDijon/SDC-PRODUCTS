@@ -1,52 +1,50 @@
+DROP DATABASE IF EXISTS products;
 CREATE DATABASE products;
 
 \c products;
 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
   id INTEGER PRIMARY KEY,
-  campus TEXT,
-  name TEXT,
-  slogan TEXT,
-  description TEXT,
-  category TEXT,
-  default_price TEXT,
-  created_at TEXT,
-  updated_at TEXT
+  name VARCHAR(50),
+  slogan VARCHAR(500),
+  description VARCHAR(500),
+  category VARCHAR(50),
+  default_price VARCHAR(20)
 );
 
-CREATE TABLE features (
+CREATE TABLE IF NOT EXISTS features (
   id INTEGER PRIMARY KEY,
   product_id INTEGER REFERENCES products(id),
-  name TEXT,
-  value TEXT
+  name VARCHAR(20),
+  value VARCHAR(20)
 );
 
-CREATE TABLE styles (
+CREATE TABLE IF NOT EXISTS styles (
   id INTEGER PRIMARY KEY,
   product_id INTEGER REFERENCES products(id),
-  name TEXT,
-  sale_price TEXT,
-  original_price TEXT,
+  name VARCHAR(20),
+  sale_price VARCHAR(20),
+  original_price VARCHAR(20),
   is_default BOOLEAN
 );
 
-CREATE TABLE photos (
+CREATE TABLE IF NOT EXISTS photos (
   id INTEGER PRIMARY KEY,
   style_id INTEGER REFERENCES styles(id),
   url TEXT,
   thumbnail_url TEXT
 );
 
-CREATE TABLE skus (
+CREATE TABLE IF NOT EXISTS skus (
   id INTEGER PRIMARY KEY,
   quantity INTEGER,
-  size TEXT,
+  size VARCHAR(10),
   style_id INTEGER REFERENCES styles(id)
 );
 
-CREATE INDEX products_idx ON products(id, campus, name, slogan, description, category, default_price, created_at, updated_at);
+CREATE INDEX products_idx ON products(id, name, slogan, description, category, default_price);
 
-COPY products(id, campus, name, slogan, description, category, default_price, created_at, updated_at)
+COPY products(id, name, slogan, description, category, default_price)
   FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/product.csv'
   DELIMITER ',' CSV HEADER;
 
