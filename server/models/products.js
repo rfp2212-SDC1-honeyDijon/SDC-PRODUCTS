@@ -1,45 +1,45 @@
-const {
-  getProductsQuery, getProductByIdQuery, getRelatedProductQuery, getProductStyleQuery,
-} = require('../../database/index');
+const axios = require('axios');
+
+const endpoint = `${process.env.BASEURL}/products`;
+const authHeader = {
+  Authorization: process.env.TOKEN,
+};
 
 module.exports = {
-  getProducts: (page = 1, count = 5, callback) => {
-    getProductsQuery(page, count, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
+  getProducts: (page = 1, count = 5) => {
+    const options = {
+      url: endpoint,
+      method: 'get',
+      headers: authHeader,
+      params: { page, count },
+    };
+    return axios(options);
   },
 
-  getProductById: (product_id, callback) => {
-    getProductByIdQuery(product_id, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
+  getProductById: (product_id) => {
+    const options = {
+      url: `${endpoint}/${product_id}`,
+      method: 'get',
+      headers: authHeader,
+    };
+    return axios(options);
   },
 
-  getRelatedProduct: (product_id, callback) => {
-    getRelatedProductQuery(product_id, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
+  getRelatedProduct: (product_id) => {
+    const options = {
+      url: `${endpoint}/${product_id}/related`,
+      method: 'get',
+      headers: authHeader,
+    };
+    return axios(options);
   },
 
-  getProductStyle: (product_id, callback) => {
-    getProductStyleQuery(product_id, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.rows);
-      }
-    });
+  getProductStyle: (product_id) => {
+    const options = {
+      url: `${endpoint}/${product_id}/styles`,
+      method: 'get',
+      headers: authHeader,
+    };
+    return axios(options);
   },
 };
