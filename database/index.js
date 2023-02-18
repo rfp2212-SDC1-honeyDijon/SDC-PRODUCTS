@@ -3,51 +3,42 @@ const postgresqlConfig = require('./config');
 
 const pool = new Pool(postgresqlConfig);
 
-// `products` is the db name
-pool.query('SELECT * FROM products', (err, res) => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log(res.rows);
-  }
-});
-
-function getProducts(page, count) {
-  pool.query('SELECT * FROM products', (err, res) => {
+function getProductsQuery(page, count, callback) {
+  pool.query(`SELECT * FROM products LIMIT ${page * count}`, (err, res) => {
     if (err) {
-      console.log(err);
+      callback(err);
     } else {
-      console.log(res.rows);
+      callback(res.rows);
     }
   });
 }
 
-function getProductById(product_id) {
-  pool.query('SELECT * FROM products', (err, res) => {
+function getProductByIdQuery(product_id, callback) {
+  pool.query(`SELECT * FROM products WHERE id = [${product_id}]`, (err, res) => {
     if (err) {
-      console.log(err);
+      callback(err);
     } else {
-      console.log(res.rows);
+      callback(res.rows);
     }
   });
 }
 
-function getRelatedProduct(product_id) {
-  pool.query('SELECT * FROM products', (err, res) => {
+function getRelatedProductQuery(product_id, callback) {
+  pool.query(`SELECT related_product_id FROM related WHERE current_product_id = [${product_id}]`, (err, res) => {
     if (err) {
-      console.log(err);
+      callback(err);
     } else {
-      console.log(res.rows);
+      callback(res.rows);
     }
   });
 }
 
-function getProductStyle(product_id) {
-  pool.query('SELECT * FROM products', (err, res) => {
+function getProductStyleQuery(product_id, callback) {
+  pool.query(`SELECT * FROM styles WHERE product_id = [${product_id}]`, (err, res) => {
     if (err) {
-      console.log(err);
+      callback(err);
     } else {
-      console.log(res.rows);
+      callback(res.rows);
     }
   });
 }
@@ -55,8 +46,8 @@ function getProductStyle(product_id) {
 pool.end();
 
 module.exports = {
-  getProducts,
-  getProductById,
-  getRelatedProduct,
-  getProductStyle,
+  getProductsQuery,
+  getProductByIdQuery,
+  getRelatedProductQuery,
+  getProductStyleQuery,
 };
