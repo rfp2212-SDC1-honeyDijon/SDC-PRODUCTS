@@ -24,12 +24,20 @@ LEFT JOIN features f ON p.id = f.product_id
 WHERE p.id = ${productId}
 GROUP BY p.id
 `)
-  .then((results) => {
-    if (results.rows.length === 0) {
-      throw new Error(`ProductId ${productId} not found`);
-    }
-    return results.rows[0];
-  })
+  .then((results) => results.rows[0])
+  .catch((error) => {
+    throw new Error(`Error retrieving product ${productId}, error message: ${error.message}`);
+  });
+
+// TODO getStyles
+const getStyles = (productId) => db.query('SELECT * FROM styles LIMIT 1')
+  .then((results) => results.rows[0])
+  .catch((error) => {
+    throw new Error(`Error retrieving product ${productId}, error message: ${error.message}`);
+  });
+
+const getRelated = (productId) => db.query(`SELECT array_agg(related_product_id) FROM related WHERE current_product_id = ${productId}`)
+  .then((results) => results.rows[0].array_agg)
   .catch((error) => {
     throw new Error(`Error retrieving product ${productId}, error message: ${error.message}`);
   });
@@ -37,4 +45,6 @@ GROUP BY p.id
 module.exports = {
   getProducts,
   getProduct,
+  getStyles,
+  getRelated,
 };
