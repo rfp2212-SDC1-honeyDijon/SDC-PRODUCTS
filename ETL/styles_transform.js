@@ -32,9 +32,12 @@ class CSVCleaner extends Transform {
     const missingKeys = requiredKeys.filter((key) => !(key in chunk));
     if (missingKeys.length > 0) {
       errorCount++;
-    } else if (chunk.original_price === 'null' || chunk.original_price === '') {
+    } else if (!chunk.original_price || chunk.original_price === 'null') {
       errorCount++;
     } else {
+      if (!chunk.sale_price || chunk.sale_price === 'null') {
+        chunk.sale_price = '0';
+      }
       successCount++;
       const row = {
         id: Number(chunk.id),
