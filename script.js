@@ -7,7 +7,11 @@ export const options = {
       executor: 'ramping-vus',
       startVUs: 0,
       stages: [
-        { duration: '20s', target: 10 }, // below normal load
+        { duration: '20s', target: 10 },
+        { duration: '20s', target: 50 },
+        { duration: '20s', target: 100 },
+        { duration: '20s', target: 250 },
+        { duration: '20s', target: 10 },
         { duration: '10s', target: 0 }, // scale down. Recovery stage.
       ],
     },
