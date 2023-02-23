@@ -1,11 +1,24 @@
+const Redis = require('redis');
 const models = require('./models');
+
+const redisClient = Redis.createClient();
+// const DEFAULT_EXPIRATION = 3600;
+
+redisClient.on('connect', () => console.log('Redis connected!'));
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
+redisClient.connect();
 
 const getProducts = async (req, res) => {
   const count = req.query.count || 5;
   const page = req.query.page || 1;
   try {
-    const products = await models.getProducts(count, page);
-    res.send(products);
+    const data = await redisClient.get(`products?count=${count}&page=${page}`);
+    if (data === null) {
+      const products = await models.getProducts(count, page);
+      redisClient.set(`products?count=${count}&page=${page}`, JSON.stringify(products));
+      return res.json(products);
+    }
+    res.json(JSON.parse(data));
   } catch (e) {
     res.status(400).send(e.message);
   }
