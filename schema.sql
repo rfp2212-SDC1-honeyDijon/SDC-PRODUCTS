@@ -54,7 +54,10 @@ CREATE TABLE IF NOT EXISTS related (
   related_product_id INTEGER
 );
 
-CREATE INDEX products_idx ON products(id, name, slogan, description, category, default_price);
+CREATE INDEX products_idx ON products(id);
+CREATE INDEX features_idx ON features(id);
+CREATE INDEX styles_idx ON styles(id);
+CREATE INDEX related_idx ON related(id);
 
 COPY products(id, name, slogan, description, category, default_price)
   FROM '/Users/kathyye/Desktop/hackreactor/SDC-PRODUCTS/ETL/transformed_data/product.csv'
