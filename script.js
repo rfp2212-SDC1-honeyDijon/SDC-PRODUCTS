@@ -20,8 +20,10 @@ export const options = {
 export default function stressTest() {
   const BASE_URL = 'http://localhost:8080';
   const randomProductID = Math.floor(Math.random() * 1000012);
+  const randomPage = Math.floor(Math.random() * 10);
+  const randomCount = Math.floor(Math.random() * 10);
   http.batch([
-    ['GET', `${BASE_URL}/products`],
+    ['GET', `${BASE_URL}/products?count=${randomCount}&page=${randomPage}`],
     ['GET', `${BASE_URL}/products/${randomProductID}`],
     ['GET', `${BASE_URL}/products/${randomProductID}/styles`],
     ['GET', `${BASE_URL}/products/${randomProductID}/related`],
