@@ -7,23 +7,24 @@ export const options = {
       executor: 'ramping-vus',
       startVUs: 0,
       stages: [
-        { duration: '20s', target: 10 },
-        { duration: '20s', target: 50 },
-        { duration: '20s', target: 100 },
-        { duration: '20s', target: 250 },
-        { duration: '20s', target: 10 },
-        { duration: '10s', target: 0 }, // scale down. Recovery stage.
+        { duration: '10s', target: 1 },
+        { duration: '10s', target: 10 },
+        { duration: '10s', target: 100 },
+        { duration: '10s', target: 1000 },
+        { duration: '30s', target: 0 },
       ],
     },
   },
 };
 
-export default function () {
+export default function stressTest() {
   const BASE_URL = 'http://localhost:8080';
-  const responses = http.batch([
-    ['GET', `${BASE_URL}/products`, null, { timeout: '30s' }],
-    ['GET', `${BASE_URL}/products/40396`, null, { timeout: '30s' }],
-    ['GET', `${BASE_URL}/products/40396/styles`, null, { timeout: '30s' }],
-    ['GET', `${BASE_URL}/products/40396/related`, null, { timeout: '30s' }],
+  const randomProductID = Math.floor(Math.random() * 1000012);
+  http.batch([
+    ['GET', `${BASE_URL}/products`],
+    ['GET', `${BASE_URL}/products/${randomProductID}`],
+    ['GET', `${BASE_URL}/products/${randomProductID}/styles`],
+    ['GET', `${BASE_URL}/products/${randomProductID}/related`],
   ]);
+  sleep(2);
 }
