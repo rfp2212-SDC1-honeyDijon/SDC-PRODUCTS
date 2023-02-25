@@ -6,3 +6,5 @@ ETL/atelier_data
 ETL/transformed_data
 */ETL
 dump.rdb
+schema.sql
+product_schema.js
