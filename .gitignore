@@ -4,7 +4,7 @@ node_modules
 /database/config.js
 ETL/atelier_data
 ETL/transformed_data
-*/ETL
+ETL
 dump.rdb
 schema.sql
 product_schema.js
