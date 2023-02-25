@@ -1,12 +1,7 @@
 const db = require('./database');
 
 const getProducts = (count, page) => db.query(`SELECT * FROM products LIMIT ${count} OFFSET ${(page - 1) * count}`)
-  .then((results) => {
-    if (results.rows === null || results.rows === undefined) {
-      return [];
-    }
-    return results.rows;
-  })
+  .then((results) => results.rows ?? [])
   .catch((error) => {
     throw new Error(`Error retrieving products, error message: ${error.message}`);
   });
@@ -29,12 +24,7 @@ LEFT JOIN features f ON p.id = f.product_id
 WHERE p.id = ${productId}
 GROUP BY p.id
 `)
-.then((results) => {
-  if (results.rows[0] === null || results.rows[0] === undefined) {
-    return [];
-  }
-  return results.rows[0];
-})
+  .then((results) => results.rows[0] ?? [])
   .catch((error) => {
     throw new Error(`Error retrieving product ${productId}, error message: ${error.message}`);
   });
@@ -75,23 +65,13 @@ FROM styles s
 WHERE s.product_id = ${productId}
 GROUP BY s.product_id;
 `)
-  .then((results) => {
-    if (results.rows[0] === null || results.rows[0] === undefined) {
-      return [];
-    }
-    return results.rows[0];
-  })
+  .then((results) => results.rows[0] ?? [])
   .catch((error) => {
     throw new Error(`Error retrieving product ${productId}, error message: ${error.message}`);
   });
 
 const getRelated = (productId) => db.query(`SELECT array_agg(related_product_id) FROM related WHERE current_product_id = ${productId}`)
-  .then((results) => {
-    if (results.rows[0].array_agg === null || results.rows[0].array_agg === undefined) {
-      return [];
-    }
-    return results.rows[0].array_agg;
-  })
+  .then((results) => results.rows[0].array_agg ?? [])
   .catch((error) => {
     throw new Error(`Error retrieving product ${productId}, error message: ${error.message}`);
   });
