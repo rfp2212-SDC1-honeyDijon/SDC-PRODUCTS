@@ -1,18 +1,8 @@
 node_modules
 .env
 .DS_store
-**/coverage
-client/dist/bundle.js*
 /database/config.js
-
-# Ignores transpiled images
-client/dist/assets/transpiled/*.png
-client/dist/assets/transpiled/*.jpg
-client/dist/assets/transpiled/*.jpeg
-client/dist/assets/transpiled/*.svg
-client/dist/assets/transpiled/*.gif
-
 ETL/atelier_data
 ETL/transformed_data
-
+*/ETL
 dump.rdb
