@@ -18,7 +18,7 @@ export const options = {
 };
 
 export default function stressTest() {
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = 'http://localhost:3000';
   const randomProductID = Math.floor(Math.random() * 1000012);
   const randomPage = Math.floor(Math.random() * 10);
   const randomCount = Math.floor(Math.random() * 10);
