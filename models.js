@@ -13,14 +13,16 @@ p.slogan,
 p.description,
 p.category,
 p.default_price,
-json_agg(
+(SELECT json_agg(
   json_build_object(
     'feature', f.name,
     'value', f.value
   )
+)
+FROM features f 
+WHERE f.product_id = p.id
 ) AS features
 FROM products p
-LEFT JOIN features f ON p.id = f.product_id
 WHERE p.id = ${productId}
 GROUP BY p.id
 `)
